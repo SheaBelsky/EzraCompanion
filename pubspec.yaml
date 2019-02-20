@@ -20,6 +20,11 @@ dependencies:
   # Font Awesome icons
   font_awesome_flutter: ^8.4.0
 
+  # Firebase Cloud Messaging
+  firebase_analytics: ^1.0.4
+  firebase_core: ^0.3.0+2
+  firebase_messaging: ^3.0.1
+
   # We kinda need this
   flutter:
     sdk: flutter

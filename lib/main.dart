@@ -6,30 +6,68 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 
+// Firebase Analytics
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
+
+// Firebase Messaging
+import 'package:firebase_messaging/firebase_messaging.dart';
+final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+  static FirebaseAnalytics analytics = FirebaseAnalytics();
+  static FirebaseAnalyticsObserver observer = FirebaseAnalyticsObserver(analytics: analytics);
+
+  void firebaseCloudMessaging_Listeners() {
+    if (Platform.isIOS) iOS_Permission();
+
+    _firebaseMessaging.getToken().then((token){
+      print("token $token");
+    });
+
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print('on message $message');
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print('on resume $message');
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print('on launch $message');
+      },
+    );
+  }
+
+  void iOS_Permission() {
+    _firebaseMessaging.requestNotificationPermissions(
+        IosNotificationSettings(sound: true, badge: true, alert: true)
+    );
+    _firebaseMessaging.onIosSettingsRegistered.listen((IosNotificationSettings settings) {
+      print("Settings registered: $settings");
+    });
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    // Set up push notifications with Firebase
+    firebaseCloudMessaging_Listeners();
+
+    // Create the app
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.pink,
       ),
       home: MyHomePage(
           title: 'Flutter Demo Shea Home Page',
-          storage: CounterStorage()
+          storage: CounterStorage(),
+          analytics: analytics,
+          observer: observer,
       ),
+      navigatorObservers: <NavigatorObserver>[observer],
     );
   }
 }
@@ -74,29 +112,27 @@ class CounterStorage {
 class MyHomePage extends StatefulWidget {
   final String title;
   final CounterStorage storage;
+  final FirebaseAnalytics analytics;
+  final FirebaseAnalyticsObserver observer;
+
   MyHomePage({
     Key key,
     this.title,
+    this.analytics,
+    this.observer,
     @required this.storage
   }) : super(key: key);
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-
-
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState(analytics, observer);
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  _MyHomePageState(this.analytics, this.observer);
+
   int _counter = 0;
+  final FirebaseAnalyticsObserver observer;
+  final FirebaseAnalytics analytics;
 
   @override
   void initState() {
@@ -116,8 +152,6 @@ class _MyHomePageState extends State<MyHomePage> {
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
       _counter++;
-
-
     });
     return widget.storage.writeCounter(_counter);
   }
