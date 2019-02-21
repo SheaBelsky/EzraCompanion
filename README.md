@@ -1,16 +1,16 @@
-# shea_test
+# Ezra Companion
 
-A new Flutter project.
+The official application for the Ezra Science Olympiad Platform.
 
-## Getting Started
+# Features
 
-This project is a starting point for a Flutter application.
+* Browse a list of all Science Olympiad tournaments being hosted by Ezra
+* View the latest information from tournament organizers
+* See a map of the venue
+* Get push notifications from organizers
+* Create a customized schedule, and get reminders when they're close
+* View the tournament's results after organizers have finalized them
 
-A few resources to get you started if this is your first Flutter project:
+# Release Date
 
-- [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.io/docs/cookbook)
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+This app will be made available for the New York State Division C State Tournament. Please look for more information closer to the tournament day!
