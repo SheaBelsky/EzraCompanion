@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 import "package:ezra_companion/views/home/TournamentListItem.dart";
 
 // Route imports
-import "package:ezra_companion/views/tournament/TournamentHome.dart";
+import "package:ezra_companion/views/tournament/TournamentView.dart";
 
 // Make a request to Ezra and get a list of tournaments
 // TODO: Store this locally, check for new tournaments every so often.
@@ -55,7 +55,7 @@ class TournamentList extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => TournamentHome(TournamentInfo: tournaments[index]),
+                builder: (context) => TournamentView(TournamentInfo: tournaments[index]),
               ),
             );
           }
