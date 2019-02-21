@@ -7,7 +7,7 @@ description: Companion to Ezra Tech.
 # Both the version and the builder number may be overridden in flutter
 # build by specifying --build-name and --build-number, respectively.
 # Read more about versioning at semver.org.
-version: 1.0.1+1
+version: 0.2.0
 
 environment:
   sdk: ">=2.0.0-dev.68.0 <3.0.0"
@@ -16,6 +16,9 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
+
+  # Format dates to make them more readable
+  date_format: ^1.0.6
 
   # Font Awesome icons
   font_awesome_flutter: ^8.4.0

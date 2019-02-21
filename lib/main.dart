@@ -1,10 +1,16 @@
-import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+
+// Class imports
+import "package:ezra_companion/views/home/TournamentListItem.dart";
+
+// Route imports
+import "package:ezra_companion/views/home/TournamentList.dart";
 
 // Firebase Analytics
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -20,8 +26,10 @@ class MyApp extends StatelessWidget {
   static FirebaseAnalytics analytics = FirebaseAnalytics();
   static FirebaseAnalyticsObserver observer = FirebaseAnalyticsObserver(analytics: analytics);
 
-  void firebaseCloudMessaging_Listeners() {
-    if (Platform.isIOS) iOS_Permission();
+  void firebaseCloudMessagingListeners() {
+    if (Platform.isIOS) {
+      iOSPermission();
+    }
 
     _firebaseMessaging.getToken().then((token){
       print("token $token");
@@ -40,7 +48,7 @@ class MyApp extends StatelessWidget {
     );
   }
 
-  void iOS_Permission() {
+  void iOSPermission() {
     _firebaseMessaging.requestNotificationPermissions(
         IosNotificationSettings(sound: true, badge: true, alert: true)
     );
@@ -53,13 +61,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Set up push notifications with Firebase
-    firebaseCloudMessaging_Listeners();
+    firebaseCloudMessagingListeners();
 
     // Create the app
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.pink,
+        primarySwatch: Colors.red
       ),
       home: MyHomePage(
           title: 'Flutter Demo Shea Home Page',
@@ -69,12 +77,6 @@ class MyApp extends StatelessWidget {
       ),
       navigatorObservers: <NavigatorObserver>[observer],
     );
-  }
-}
-
-class GetData {
-  Future<http.Response> fetchData(http.Client client) async {
-    return client.get("http://jsonplaceholder.typicode.com/photos");
   }
 }
 
@@ -144,52 +146,28 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Future<File> _incrementCounter() async {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-    return widget.storage.writeCounter(_counter);
-  }
-
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: new ListView.builder(
-        itemCount: _counter,
-        itemBuilder: (context, index) {
-          return ListTile(
-            leading: const Icon(Icons.dehaze),
-            title: Text("I am a thing $index"),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SecondPage())
-              );
+      body: Center(
+        child: FutureBuilder<List<TournamentListItem>>(
+          future: fetchTournaments(http.Client()),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              print(snapshot.error);
             }
-          );
-        },
+
+            // If there is data, return a TournamentList
+            // If not, return a progress indicator until the data is returned
+            return snapshot.hasData
+                ? TournamentList(tournaments: snapshot.data)
+                : Center(child: CircularProgressIndicator());
+          },
+        )
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
