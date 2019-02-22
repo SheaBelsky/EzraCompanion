@@ -55,7 +55,7 @@ class TournamentList extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => TournamentView(TournamentInfo: tournaments[index]),
+                builder: (context) => TournamentView(tournamentInfo: tournaments[index]),
               ),
             );
           }

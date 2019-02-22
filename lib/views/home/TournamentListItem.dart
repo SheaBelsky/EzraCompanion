@@ -1,22 +1,28 @@
 class TournamentListItem {
-  final String id;
+  final Map content;
   final String date;
+  final String id;
   final String key;
+  final Map location;
   final String name;
 
   TournamentListItem({
-    this.id,
+    this.content,
     this.date,
+    this.id,
     this.key,
-    this.name
+    this.location,
+    this.name,
   });
 
   factory TournamentListItem.fromJson(Map<String, dynamic> json) {
     return TournamentListItem(
-      id: json['_id'],
+      content: json['content'],
       date: json['date'],
+      id: json['_id'],
       key: json['key'],
-      name: json['name'],
+      location: json['location'],
+      name: json['name']
     );
   }
 }

@@ -83,23 +83,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-class SecondPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("I am a different page"),
-      ),
-      body: Center(
-        child: RaisedButton.icon(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          label: Text("go back"),
-          icon: new Icon(FontAwesomeIcons.creditCard)
-        ),
-      )
-    );
-  }
-}
