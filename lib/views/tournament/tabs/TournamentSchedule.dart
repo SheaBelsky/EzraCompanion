@@ -2,14 +2,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 // Class imports
-import "package:ezra_companion/views/home/TournamentListItem.dart";
+import "package:ezra_companion/classes/TournamentListItem.dart";
 
 class TournamentSchedule extends StatelessWidget {
-  final TournamentListItem TournamentInfo;
+  final TournamentListItem tournamentInfo;
 
   const TournamentSchedule({
     Key key,
-    this.TournamentInfo,
+    this.tournamentInfo,
   }) : super(key: key);
 
   @override
@@ -17,7 +17,7 @@ class TournamentSchedule extends StatelessWidget {
     return Column(
       children: <Widget>[
         Text('This is the schedule page'),
-        Text('View more ${TournamentInfo.name}'),
+        Text('View more ${tournamentInfo.name}'),
       ],
     );
   }

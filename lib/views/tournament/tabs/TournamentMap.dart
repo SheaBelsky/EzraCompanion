@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 // If no map is specified, consume the event location and handoff to the default map client
 
 // Class imports
-import "package:ezra_companion/views/home/TournamentListItem.dart";
+import "package:ezra_companion/classes/TournamentListItem.dart";
 
 class TournamentMap extends StatelessWidget {
-  final TournamentListItem TournamentInfo;
+  final TournamentListItem tournamentInfo;
 
   const TournamentMap({
     Key key,
-    this.TournamentInfo,
+    this.tournamentInfo,
   }) : super(key: key);
 
   @override
@@ -20,7 +20,7 @@ class TournamentMap extends StatelessWidget {
     return Column(
       children: <Widget>[
         Text('This is the map page'),
-        Text('View more ${TournamentInfo.name}'),
+        Text('View more ${tournamentInfo.name}'),
       ],
     );
   }

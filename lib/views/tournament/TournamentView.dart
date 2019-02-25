@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 // Class imports
-import "package:ezra_companion/FileStorage.dart";
-import "package:ezra_companion/views/home/TournamentListItem.dart";
+import "package:ezra_companion/classes/FileStorage.dart";
+import "package:ezra_companion/classes/TournamentListItem.dart";
 
 // Route imports
 import "package:ezra_companion/views/tournament/tabs/TournamentHome.dart";
@@ -66,11 +66,11 @@ class _TournamentViewState extends State<TournamentView> {
     _fileStorage = new FileStorage(tournamentInfo: widget.tournamentInfo);
 
     // Initialize a new instance of each possible view within this tournament
-    _tournamentHome = new TournamentHome(TournamentInfo: widget.tournamentInfo);
-    _tournamentMap = new TournamentMap(TournamentInfo: widget.tournamentInfo);
-    _tournamentNotifications = new TournamentNotifications(TournamentInfo: widget.tournamentInfo);
-    _tournamentResults = new TournamentResults(TournamentInfo: widget.tournamentInfo);
-    _tournamentSchedule = new TournamentSchedule(TournamentInfo: widget.tournamentInfo);
+    _tournamentHome = new TournamentHome(tournamentInfo: widget.tournamentInfo);
+    _tournamentMap = new TournamentMap(tournamentInfo: widget.tournamentInfo);
+    _tournamentNotifications = new TournamentNotifications(tournamentInfo: widget.tournamentInfo);
+    _tournamentResults = new TournamentResults(tournamentInfo: widget.tournamentInfo);
+    _tournamentSchedule = new TournamentSchedule(tournamentInfo: widget.tournamentInfo);
 
     // Set the page list based on the initialized views
     _tournamentViewPages = [
@@ -82,11 +82,23 @@ class _TournamentViewState extends State<TournamentView> {
     ];
   }
 
+  // TODO: Maintain state of which tournament is favorited. On app load, go right to that tournament. Only allow one tournament to be favorited at a time.
+  // Change the color of the star icon based on what tournament is favorited.
+
   // Build the widget
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.star_border),
+            tooltip: "Favorite",
+            onPressed: () {
+              print("pressed");
+            },
+          )
+        ],
         title: Text(widget.tournamentInfo.name),
       ),
       body: Padding(

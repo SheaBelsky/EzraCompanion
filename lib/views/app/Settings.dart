@@ -8,20 +8,16 @@ import 'package:flutter/material.dart';
 // Class imports
 import "package:ezra_companion/classes/TournamentListItem.dart";
 
-class TournamentNotifications extends StatelessWidget {
-  final TournamentListItem tournamentInfo;
-
-  const TournamentNotifications({
+class Settings extends StatelessWidget {
+  const Settings({
     Key key,
-    this.tournamentInfo,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        Text('This is the notifications page'),
-        Text('View more ${tournamentInfo.name}'),
+        Text('This is the settings page'),
       ],
     );
   }

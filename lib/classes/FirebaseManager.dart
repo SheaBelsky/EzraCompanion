@@ -24,7 +24,7 @@ class FirebaseManager {
     });
   }
 
-  void setupFirebase() {
+  void setupMessaging() {
     if (Platform.isIOS) {
       iOSPermission();
     }
@@ -92,5 +92,4 @@ class FirebaseManager {
   Future<void> _testSetSessionTimeoutDuration() async {
     await _analytics.android?.setSessionTimeoutDuration(2000000);
   }
-
 }

@@ -1,4 +1,3 @@
-import 'package:date_format/date_format.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart' show parse;
@@ -6,7 +5,7 @@ import 'package:html/parser.dart' show parse;
 // View event description, date, location? what else?
 
 // Class imports
-import "package:ezra_companion/views/home/TournamentListItem.dart";
+import "package:ezra_companion/classes/TournamentListItem.dart";
 
 // Used to display text as a header and subtitle
 class TournamentHomeTextItem extends StatelessWidget {
@@ -52,51 +51,37 @@ class TournamentHomeTextItem extends StatelessWidget {
 }
 
 class TournamentHome extends StatelessWidget {
-  final TournamentListItem TournamentInfo;
+  final TournamentListItem tournamentInfo;
 
   const TournamentHome({
     Key key,
-    this.TournamentInfo,
+    this.tournamentInfo,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-
-
-    // Extract information from the tournament location
-    String buildingName = TournamentInfo.location['name'];
-    String street1 = TournamentInfo.location['street1'];
-    String city = TournamentInfo.location['suburb'];
-    String state = TournamentInfo.location['state'];
-    String zipcode = TournamentInfo.location['postcode'];
-
     return ListView(
-//      mainAxisAlignment: MainAxisAlignment.center
       children: <Widget>[
         TournamentHomeTextItem(
             heading: "Tournament Name",
             text: [
-              TournamentInfo.name
+              tournamentInfo.name
             ]
         ),
         TournamentHomeTextItem(
             heading: "Tournament Date",
             text: [
-              formatDate(DateTime.parse(TournamentInfo.date), [MM, ' ', d, ', ', yyyy])
+              tournamentInfo.formattedDate
             ]
         ),
         TournamentHomeTextItem(
             heading: "Tournament Location",
-            text: [
-              buildingName,
-              street1,
-              "$city, $state $zipcode"
-            ]
+            text: tournamentInfo.formattedLocation
         ),
         TournamentHomeTextItem(
           heading: "Tournament Information",
           text: [
-            parse(TournamentInfo.content["extended"]).body.text
+            parse(tournamentInfo.content["extended"]).body.text
           ]
         )
       ],
