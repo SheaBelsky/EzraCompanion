@@ -9,8 +9,10 @@ import 'package:flutter/material.dart';
 import "package:ezra_companion/classes/TournamentListItem.dart";
 
 class Settings extends StatelessWidget {
+  final Function handleResetButtonPress;
   const Settings({
     Key key,
+    this.handleResetButtonPress
   }) : super(key: key);
 
   @override
@@ -18,6 +20,14 @@ class Settings extends StatelessWidget {
     return Column(
       children: <Widget>[
         Text('This is the settings page'),
+        RaisedButton(
+          child: Text("reset"),
+          onPressed: (() async {
+            await handleResetButtonPress();
+            // alert to something...
+            print('done');
+          }),
+        )
       ],
     );
   }

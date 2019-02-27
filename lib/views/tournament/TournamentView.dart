@@ -13,12 +13,20 @@ import "package:ezra_companion/views/tournament/tabs/TournamentResults.dart";
 import "package:ezra_companion/views/tournament/tabs/TournamentSchedule.dart";
 
 class TournamentView extends StatefulWidget {
+  final Function addFavorite;
+  final Function removeFavorite;
+
+  bool isFavorited;
+
   // Information about this tournament from Ezra
   final TournamentListItem tournamentInfo;
 
   // Constructor
   TournamentView({
     Key key,
+    this.addFavorite,
+    this.isFavorited,
+    this.removeFavorite,
     this.tournamentInfo,
   }) : super(key: key);
 
@@ -27,6 +35,8 @@ class TournamentView extends StatefulWidget {
 }
 
 class _TournamentViewState extends State<TournamentView> {
+  bool heartFilled;
+
   // Currently selected tab
   int _selectedIndex = 0;
 
@@ -80,6 +90,9 @@ class _TournamentViewState extends State<TournamentView> {
       _tournamentResults,
       _tournamentSchedule,
     ];
+
+    // Favorite heart status
+    heartFilled = widget.isFavorited;
   }
 
   // TODO: Maintain state of which tournament is favorited. On app load, go right to that tournament. Only allow one tournament to be favorited at a time.
@@ -92,10 +105,24 @@ class _TournamentViewState extends State<TournamentView> {
       appBar: AppBar(
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.star_border),
+            icon: heartFilled ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
             tooltip: "Favorite",
             onPressed: () {
-              print("pressed");
+              // If the tournament is not favorited, they are making it favorite
+              if (!heartFilled) {
+                print("inner id");
+                print(widget.tournamentInfo.id);
+                widget.addFavorite(widget.tournamentInfo.id);
+              }
+              // If the tournament is favorited, they are making it unfavorited
+              else {
+                print("inner id");
+                print(widget.tournamentInfo.id);
+                widget.removeFavorite(widget.tournamentInfo.id);
+              }
+              setState(() {
+                heartFilled = !heartFilled;
+              });
             },
           )
         ],

@@ -60,31 +60,36 @@ class TournamentHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: <Widget>[
-        TournamentHomeTextItem(
-            heading: "Tournament Name",
-            text: [
-              tournamentInfo.name
-            ]
-        ),
-        TournamentHomeTextItem(
-            heading: "Tournament Date",
-            text: [
-              tournamentInfo.formattedDate
-            ]
-        ),
-        TournamentHomeTextItem(
-            heading: "Tournament Location",
-            text: tournamentInfo.formattedLocation
-        ),
-        TournamentHomeTextItem(
+    List<Widget> listChildren = [
+      TournamentHomeTextItem(
+          heading: "Tournament Name",
+          text: [
+            tournamentInfo.name
+          ]
+      ),
+      TournamentHomeTextItem(
+          heading: "Tournament Date",
+          text: [
+            tournamentInfo.formattedDate
+          ]
+      ),
+      TournamentHomeTextItem(
+          heading: "Tournament Location",
+          text: [
+            tournamentInfo.location
+          ]
+      ),
+    ];
+    if (tournamentInfo.description != null) {
+      listChildren.add(TournamentHomeTextItem(
           heading: "Tournament Information",
           text: [
-            parse(tournamentInfo.content["extended"]).body.text
+            parse(tournamentInfo.description).body.text
           ]
-        )
-      ],
+      ));
+    }
+    return ListView(
+      children: listChildren
     );
   }
 }

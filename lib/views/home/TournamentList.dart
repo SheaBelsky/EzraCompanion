@@ -16,9 +16,15 @@ import "package:ezra_companion/views/tournament/TournamentView.dart";
 Future<List<TournamentListItem>> fetchTournaments(http.Client client) async {
   final response = await client.get('https://www.ezratech.us/api/tournaments/search');
 
-  // Use the compute function to run parseTournaments
-  // Depends on package:flutter/foundation:dart
-  return compute(parseTournaments, response.body);
+  if (response.statusCode == 200) {
+    // Use the compute function to run parseTournaments
+    // Depends on package:flutter/foundation:dart
+    return compute(parseTournaments, response.body);
+  }
+  else {
+    // TODO: Error handling? How?
+    print(response);
+  }
 }
 
 /// A function that converts a response body into a List<Tournament>
@@ -26,7 +32,7 @@ List<TournamentListItem> parseTournaments(String responseBody) {
   final decodedBody = json.decode(responseBody);
   // The API returns all the competitions in the 'competitions' property of the object.
   // It is necessary to access that before parsing anything as a Tournament.
-  final parsed = decodedBody["competitions"].cast<Map<String, dynamic>>();
+  final parsed = decodedBody.cast<Map<String, dynamic>>();
 
   // Parse each tournament as an instantiation of the TournamentListItem class
   return parsed.map<TournamentListItem>((json) => TournamentListItem.fromJson(json)).toList();
@@ -34,9 +40,18 @@ List<TournamentListItem> parseTournaments(String responseBody) {
 
 /// Represents a list of tournaments
 class TournamentList extends StatelessWidget {
-  final List<TournamentListItem> tournaments;
+  final Function addFavorite;
+  final Function removeFavorite;
+  final List favoriteTournaments;
+  final List tournaments;
 
-  TournamentList({Key key, this.tournaments}) : super(key: key);
+  TournamentList({
+    Key key,
+    this.addFavorite,
+    this.removeFavorite,
+    this.favoriteTournaments,
+    this.tournaments
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -48,14 +63,21 @@ class TournamentList extends StatelessWidget {
         String formattedDate = formatDate(DateTime.parse(tournaments[index].date), [MM, ' ', d, ', ', yyyy]);
         // Format the date for display purposes
         return ListTile(
-          leading: Icon(Icons.event_seat),
           subtitle: Text(formattedDate),
           title: Text(tournaments[index].name),
           onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => TournamentView(tournamentInfo: tournaments[index]),
+                builder: (context) {
+                  TournamentListItem currentTournament = tournaments[index];
+                  return TournamentView(
+                    addFavorite: addFavorite,
+                    isFavorited: favoriteTournaments.contains(currentTournament.id),
+                    removeFavorite: removeFavorite,
+                    tournamentInfo: currentTournament
+                  );
+                }
               ),
             );
           }

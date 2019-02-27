@@ -75,7 +75,7 @@ class FileStorage {
   /// already (to hide the buttons.) The server should already know if they
   /// have subscribed to a specific topic, so this information should not be
   /// saved client-side (and it would be dangerous to do so.)
-  Future<Map> updateFile (String key, value) async {
+  Future<Map> updateFile (String key, String value) async {
     // Get the local file
     final file = await _localFile;
     final fileContents = await readFile();
@@ -102,7 +102,7 @@ class FileStorage {
   }
 
   /// Resets the state of the file
-  Future<Map> resetState () async {
+  Future<Map> resetState() async {
     // Get the local file
     final file = await _localFile;
 

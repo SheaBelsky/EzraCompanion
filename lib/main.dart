@@ -1,3 +1,7 @@
+// Flutter and Dart
+import 'dart:async';
+import 'dart:convert';
+import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
@@ -38,7 +42,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// TODO: Pass the FirebaseManager to the HomePage state so the notifications are only initialized once
 // TODO: Also allow users to "star" a single tournament at a time, so opening/closing the app will re-open that tournament.
 
 class MyHomePage extends StatefulWidget {
@@ -61,10 +64,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   static FirebaseManager _firebaseManager = new FirebaseManager();
 
+  final AsyncMemoizer _memoizer = AsyncMemoizer();
+
   // The state of the app; this is set after reading from the file corresponding to global state
   // Minimizing I/O operations, the file is written to and the state of this variable is updated
   // with the changed values only if the state changes
-  Map _appState = null;
+  Map _appState;
 
   // TODO: What does this do?
   _MyHomePageState();
@@ -73,54 +78,70 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    print("initState");
 
     // Set up push notifications when the state for the home page has been initialized
     _firebaseManager.setupMessaging();
-
-    // Set the app state from the global state file
-    _appStateManager.readFile()
-      .then((Map file) {
-        print("file");
-        print(file);
-        _appState = file;
-      });
   }
 
-  // Set the page list based on the initialized views
-  List<Widget> get _appViews {
-    return [
-      TournamentListView(),
-      Favorites(),
-      Settings()
-    ];
+  Future<List<TournamentListItem>> initializeApp() async {
+    var loadedTournaments = await this._memoizer.runOnce(() async {
+      Map loadedAppState = await _appStateManager.readFile();
+
+      DateTime now = DateTime.now();
+
+      // If this date has never been set before, it means this is the user's first time
+      DateTime lastUpdatedAt = loadedAppState["tournamentsUpdatedAt"] != null
+          ? DateTime.parse(loadedAppState["tournamentsUpdatedAt"])
+          : now;
+
+      // If the last time the tournaments were updated was 7 or more days ago, update them now
+      if (lastUpdatedAt.difference(now).inDays >= 7 || lastUpdatedAt == now) {
+        List tournaments = await fetchTournaments(http.Client());
+        String stringTournaments = json.encode(tournaments);
+        await _appStateManager.updateFile("tournaments", stringTournaments);
+        Map updatedState = await _appStateManager.updateFile("tournamentsUpdatedAt", now.toString());
+        updatedState["mapTournaments"] = tournaments;
+        setState(() {
+          _appState = updatedState;
+        });
+        return tournaments;
+      }
+      else {
+        String stringTournaments = await _appStateManager.getValue("tournaments");
+        List<TournamentListItem> convertedTournaments = await compute(parseTournaments, stringTournaments);
+        loadedAppState["mapTournaments"] = convertedTournaments;
+        setState(() {
+          _appState = loadedAppState;
+        });
+        return convertedTournaments;
+      }
+    });
+    return loadedTournaments;
   }
-  
-  /// 
+
+  /**
+   * Manages this app's global state
+   */
+
+  /// Sets the navigation of the app
   void _onBottomNavTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
 
-  /// Show the tutorial, a loading indicator, or the tournament list
-  FutureBuilder TournamentListView() {
-    return FutureBuilder(
-      future: fetchTournaments(http.Client()),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          print(snapshot.error);
-        }
+  void _resetState() async {
+    Map newState = await _appStateManager.resetState();
+    _updateLocalState(newState);
+  }
 
-        // If there is data, return a TournamentList
-        // If not, return a progress indicator until the data is returned
-        Widget tournamentListOrLoader = snapshot.hasData
-            ? TournamentList(tournaments: snapshot.data)
-            : Center(child: CircularProgressIndicator());
-
-        return tournamentListOrLoader;
-      },
-    );
+  /// Updates the local state of the app
+  void _updateLocalState (Map newAppState) {
+    print("appState");
+    print(newAppState);
+    setState(() {
+      _appState = newAppState;
+    });
   }
 
   /// Updates the state of the app locally to minimize I/O operations
@@ -130,25 +151,122 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  /**
+   * Manages favorites
+   */
+  /// Returns a filtered list of tournaments based on the favorites set by this user
+  List _getFavoriteTournaments() {
+    if (_appState is Map) {
+      List parsedFavorites = json.decode(_appState["favorites"]);
+      List tournaments = json.decode(_appState["tournaments"]);
+      if (tournaments is List && tournaments.length > 0 && parsedFavorites is List && parsedFavorites.length > 0) {
+        return tournaments.where((tournament) {
+          return parsedFavorites.contains(tournament["id"]);
+        }).toList();
+      }
+      else {
+        return [];
+      }
+    }
+    else {
+      return [];
+    }
+  }
+
+  /// Removes a favorite from the list of favorites
+  void _addFavorite(String tournamentID) {
+    List<TournamentListItem> favoriteTournaments = _getFavoriteTournaments();
+    List<String> favoriteIDs = favoriteTournaments.map((tournament) {return tournament.id;}).toList();
+    favoriteIDs.add(tournamentID);
+    String stringFavorites = json.encode(favoriteIDs);
+    _appStateManager.updateFile("favorites", stringFavorites)
+      .then(_updateLocalState);
+  }
+
+  /// Removes a favorite from the list of favorites
+  void _removeFavorite(String tournamentID) {
+    List<TournamentListItem> favoriteTournaments = _getFavoriteTournaments();
+    List<String> favoriteIDs = favoriteTournaments.map((tournament) {return tournament.id;}).toList();
+    favoriteIDs.remove(tournamentID);
+    String stringFavorites = json.encode(favoriteIDs);
+    _appStateManager.updateFile("favorites", stringFavorites)
+      .then(_updateLocalState);
+  }
+
+  /**
+   * Views
+   */
+  /// If there is data, return a TournamentList
+  /// If not, return a progress indicator until the data is returned
+  Widget _favoritesView (List<TournamentListItem> tournaments)  {
+    if (tournaments is List && tournaments.length != 0) {
+      return Favorites(
+          addFavorite: _addFavorite,
+          removeFavorite: _removeFavorite,
+          tournaments: _getFavoriteTournaments()
+      );
+    }
+    else {
+      return Center(child: CircularProgressIndicator());
+    }
+  }
+
+  /// Settings view
+  Widget _settingsView () {
+    return Settings(
+      handleResetButtonPress: _resetState,
+    );
+  }
+
+  /// If there is data, return a TournamentList
+  /// If not, return a progress indicator until the data is returned
+  Widget _tournamentListView (List<TournamentListItem> tournaments)  {
+    if (tournaments is List && tournaments.length != 0) {
+      return TournamentList(
+          addFavorite: _addFavorite,
+          favoriteTournaments: _getFavoriteTournaments(),
+          removeFavorite: _removeFavorite,
+          tournaments: tournaments
+      );
+    }
+    else {
+      return Center(child: CircularProgressIndicator());
+    }
+  }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-          child: _appViews.elementAt(_selectedIndex)
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), title: Text('Home'), backgroundColor: Colors.red),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), title: Text('Favorites'), backgroundColor: Colors.red),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), title: Text('Settings'), backgroundColor: Colors.red),
-        ],
-        currentIndex: _selectedIndex,
-        fixedColor: Colors.red,
-        onTap: _onBottomNavTapped,
-      )
+    return FutureBuilder(
+      future: initializeApp(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          print(snapshot.error);
+        }
+
+        List<TournamentListItem> tournaments = snapshot.hasData ? snapshot.data : [];
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(widget.title),
+          ),
+          body: Center(
+              child: [
+                _tournamentListView(tournaments),
+                _favoritesView(tournaments),
+                _settingsView()
+              ][_selectedIndex]
+          ),
+          bottomNavigationBar: BottomNavigationBar(
+            items: [
+              BottomNavigationBarItem(icon: Icon(Icons.home), title: Text('Home'), backgroundColor: Colors.red),
+              BottomNavigationBarItem(icon: Icon(Icons.favorite), title: Text('Favorites'), backgroundColor: Colors.red),
+              BottomNavigationBarItem(icon: Icon(Icons.settings), title: Text('Settings'), backgroundColor: Colors.red),
+            ],
+            currentIndex: _selectedIndex,
+            fixedColor: Colors.red,
+            onTap: _onBottomNavTapped,
+          )
+        );
+      },
     );
   }
 }
