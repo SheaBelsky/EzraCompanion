@@ -73,7 +73,7 @@ class TournamentList extends StatelessWidget {
                   TournamentListItem currentTournament = tournaments[index];
                   return TournamentView(
                     addFavorite: addFavorite,
-                    isFavorited: favoriteTournaments.contains(currentTournament.id),
+                    isFavorited: favoriteTournaments.contains(currentTournament.ezraId),
                     removeFavorite: removeFavorite,
                     tournamentInfo: currentTournament
                   );

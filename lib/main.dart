@@ -137,8 +137,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   /// Updates the local state of the app
   void _updateLocalState (Map newAppState) {
-    print("appState");
-    print(newAppState);
     setState(() {
       _appState = newAppState;
     });
@@ -155,14 +153,31 @@ class _MyHomePageState extends State<MyHomePage> {
    * Manages favorites
    */
   /// Returns a filtered list of tournaments based on the favorites set by this user
-  List _getFavoriteTournaments() {
-    if (_appState is Map) {
-      List parsedFavorites = json.decode(_appState["favorites"]);
-      List tournaments = json.decode(_appState["tournaments"]);
-      if (tournaments is List && tournaments.length > 0 && parsedFavorites is List && parsedFavorites.length > 0) {
-        return tournaments.where((tournament) {
-          return parsedFavorites.contains(tournament["id"]);
+  List<TournamentListItem> _getFavoriteTournaments() {
+    if (_appState is Map && _appState["favorites"] is String) {
+      // Parse favorites
+      Iterable rawFavorites = json.decode(_appState["favorites"]);
+      List<String> parsedFavorites = rawFavorites.map((tournament) => "$tournament").toList();
+
+      // Parse tournaments
+      Iterable rawTournaments = json.decode(_appState["tournaments"]);
+      List<TournamentListItem> parsedTournaments = rawTournaments.map((tournament) {
+        Map parsedCurrentTournament;
+        if (tournament is String) {
+          parsedCurrentTournament = json.decode(tournament);
+        }
+        else if (tournament is Map) {
+          parsedCurrentTournament = tournament;
+        }
+        return TournamentListItem.fromJson(parsedCurrentTournament);
+      }).toList();
+
+      // If there are favorites and tournaments
+      if (parsedTournaments is List && parsedTournaments.length > 0 && parsedFavorites is List && parsedFavorites.length > 0) {
+        List favorites = parsedTournaments.where((tournament) {
+          return parsedFavorites.contains(tournament.ezraId);
         }).toList();
+        return favorites;
       }
       else {
         return [];
@@ -173,24 +188,29 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  List _getFavoriteTournamentIDs() {
+    List favoriteTournaments = _getFavoriteTournaments();
+    List favoriteIDs = [];
+    if (favoriteTournaments is List && favoriteTournaments.length > 0) {
+      favoriteIDs = favoriteTournaments.map((tournament) => tournament.ezraId).toList();
+    }
+    return favoriteIDs;
+  }
+
   /// Removes a favorite from the list of favorites
   void _addFavorite(String tournamentID) {
-    List<TournamentListItem> favoriteTournaments = _getFavoriteTournaments();
-    List<String> favoriteIDs = favoriteTournaments.map((tournament) {return tournament.id;}).toList();
+    List favoriteIDs = _getFavoriteTournamentIDs();
     favoriteIDs.add(tournamentID);
     String stringFavorites = json.encode(favoriteIDs);
-    _appStateManager.updateFile("favorites", stringFavorites)
-      .then(_updateLocalState);
+    _appStateManager.updateFile("favorites", stringFavorites).then(_updateLocalState);
   }
 
   /// Removes a favorite from the list of favorites
   void _removeFavorite(String tournamentID) {
-    List<TournamentListItem> favoriteTournaments = _getFavoriteTournaments();
-    List<String> favoriteIDs = favoriteTournaments.map((tournament) {return tournament.id;}).toList();
+    List favoriteIDs = _getFavoriteTournamentIDs();
     favoriteIDs.remove(tournamentID);
     String stringFavorites = json.encode(favoriteIDs);
-    _appStateManager.updateFile("favorites", stringFavorites)
-      .then(_updateLocalState);
+    _appStateManager.updateFile("favorites", stringFavorites).then(_updateLocalState);
   }
 
   /**
@@ -200,10 +220,11 @@ class _MyHomePageState extends State<MyHomePage> {
   /// If not, return a progress indicator until the data is returned
   Widget _favoritesView (List<TournamentListItem> tournaments)  {
     if (tournaments is List && tournaments.length != 0) {
+      List<TournamentListItem> favoriteTournaments = _getFavoriteTournaments();
       return Favorites(
           addFavorite: _addFavorite,
           removeFavorite: _removeFavorite,
-          tournaments: _getFavoriteTournaments()
+          tournaments: favoriteTournaments
       );
     }
     else {

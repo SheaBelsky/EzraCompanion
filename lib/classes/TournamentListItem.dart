@@ -7,7 +7,7 @@ import "package:date_format/date_format.dart";
 class TournamentListItem {
   final String description;
   final String date;
-  final String id;
+  final String ezraId;
   final String key;
   final String location;
   final String name;
@@ -16,7 +16,7 @@ class TournamentListItem {
   TournamentListItem({
     this.description,
     this.date,
-    this.id,
+    this.ezraId,
     this.key,
     this.location,
     this.name,
@@ -42,27 +42,34 @@ class TournamentListItem {
   factory TournamentListItem.fromJson(Map<String, dynamic> inputJson) {
     String location;
     try {
-      Map jsonLocation = new Map<dynamic, dynamic>.from(inputJson["location"]);
-      String buildingName = jsonLocation["name"] != null ? jsonLocation["name"] : "";
-      String street1 = jsonLocation["street1"] != null ? jsonLocation["street1"] : "";
-      String city = jsonLocation["suburb"] != null ? jsonLocation["suburb"] : "";
-      String state = jsonLocation["state"] != null ? jsonLocation["state"] : "";
-      String zipcode = jsonLocation["postcode"] != null ? jsonLocation["postcode"] : "";
-      location = "$buildingName $street1, $city $state $zipcode";
+      if (inputJson["location"] is String) {
+        location = inputJson["location"];
+      }
+      else {
+        Map jsonLocation = new Map<dynamic, dynamic>.from(inputJson["location"]);
+        String buildingName = jsonLocation["name"] != null ? jsonLocation["name"] : "";
+        String street1 = jsonLocation["street1"] != null ? jsonLocation["street1"] : "";
+        String city = jsonLocation["suburb"] != null ? jsonLocation["suburb"] : "";
+        String state = jsonLocation["state"] != null ? jsonLocation["state"] : "";
+        String zipcode = jsonLocation["postcode"] != null ? jsonLocation["postcode"] : "";
+        location = "$buildingName $street1, $city $state $zipcode";
+      }
     }
     catch (e) {
       print("Error in parsing tournament location:");
       print(e);
-      print("Input JSON");
-      print(inputJson);
       print("----");
       location = "";
     }
 
+    String id = inputJson["_id"] is String
+      ? inputJson["_id"] // First time, comes from API
+      : inputJson["ezraId"]; // Second time, comes from the app itself (renamed property)
+
     return TournamentListItem(
       description: inputJson["description"],
       date: inputJson["date"],
-      id: inputJson["_id"],
+      ezraId: id,
       key: inputJson["key"],
       location: location,
       name: inputJson["name"]
@@ -74,7 +81,7 @@ class TournamentListItem {
     Map returnMap = {
       "description": description != null ? description : "",
       "date": date != null ? date : "",
-      "id": id != null ? id : "",
+      "ezraId": ezraId != null ? ezraId : "",
       "key": key != null ? key : "",
       "location": location != null ? location : "",
       "name": name != null ? name : ""

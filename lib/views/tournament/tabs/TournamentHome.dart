@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:html/parser.dart' show parse;
+import 'package:flutter_html_view/flutter_html_view.dart';
 
 // View event description, date, location? what else?
 
@@ -9,11 +9,13 @@ import "package:ezra_companion/classes/TournamentListItem.dart";
 
 // Used to display text as a header and subtitle
 class TournamentHomeTextItem extends StatelessWidget {
+  final Widget childWidget;
   final String heading;
   final List<String> text;
 
   TournamentHomeTextItem({
     Key key,
+    this.childWidget,
     this.heading,
     this.text
   }) : super(key: key);
@@ -33,13 +35,18 @@ class TournamentHomeTextItem extends StatelessWidget {
       ),
     ];
 
-    // Add each string as a text element to the children
-    text.forEach((String string) => children.add(
-        Text(
-            string,
-            textAlign: TextAlign.center
-        )
-    ));
+    if (text is List) {
+      // Add each string as a text element to the children
+      text.forEach((String string) => children.add(
+          Text(
+              string,
+              textAlign: TextAlign.center
+          )
+      ));
+    }
+    else if (childWidget is Widget) {
+      children.add(childWidget);
+    }
 
     // Some padding to separate sections of text
     children.add(SizedBox(height: 30));
@@ -81,11 +88,13 @@ class TournamentHome extends StatelessWidget {
       ),
     ];
     if (tournamentInfo.description != null) {
+      HtmlView description = new HtmlView(
+          data: tournamentInfo.description,
+          scrollable: false
+      );
       listChildren.add(TournamentHomeTextItem(
-          heading: "Tournament Information",
-          text: [
-            parse(tournamentInfo.description).body.text
-          ]
+          heading: "Tournament Description",
+          childWidget: description
       ));
     }
     return ListView(

@@ -9,7 +9,7 @@ import "package:ezra_companion/views/tournament/TournamentView.dart";
 class Favorites extends StatelessWidget {
   final Function addFavorite;
   final Function removeFavorite;
-  final List<TournamentListItem> tournaments;
+  final List tournaments;
 
   const Favorites({
     Key key,
@@ -26,8 +26,7 @@ class Favorites extends StatelessWidget {
         itemCount: tournaments.length,
         itemBuilder: (context, index) {
           // Create a ListTile for this Tournament
-          String formattedDate = formatDate(
-              DateTime.parse(tournaments[index].date), [MM, ' ', d, ', ', yyyy]);
+          String formattedDate = formatDate(DateTime.parse(tournaments[index].date), [MM, ' ', d, ', ', yyyy]);
           // Format the date for display purposes
           return ListTile(
             leading: Icon(Icons.favorite),
@@ -40,6 +39,7 @@ class Favorites extends StatelessWidget {
                   builder: (context) {
                     return TournamentView(
                       addFavorite: addFavorite,
+                      isFavorited: true,
                       removeFavorite: removeFavorite,
                       tournamentInfo: tournaments[index]
                     );

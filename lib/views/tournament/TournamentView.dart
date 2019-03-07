@@ -35,7 +35,7 @@ class TournamentView extends StatefulWidget {
 }
 
 class _TournamentViewState extends State<TournamentView> {
-  bool heartFilled;
+  bool _heartFilled;
 
   // Currently selected tab
   int _selectedIndex = 0;
@@ -87,16 +87,13 @@ class _TournamentViewState extends State<TournamentView> {
       _tournamentHome,
       _tournamentMap,
       _tournamentNotifications,
-      _tournamentResults,
       _tournamentSchedule,
+      _tournamentResults,
     ];
 
     // Favorite heart status
-    heartFilled = widget.isFavorited;
+    _heartFilled = widget.isFavorited;
   }
-
-  // TODO: Maintain state of which tournament is favorited. On app load, go right to that tournament. Only allow one tournament to be favorited at a time.
-  // Change the color of the star icon based on what tournament is favorited.
 
   // Build the widget
   @override
@@ -105,23 +102,19 @@ class _TournamentViewState extends State<TournamentView> {
       appBar: AppBar(
         actions: <Widget>[
           IconButton(
-            icon: heartFilled ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
+            icon: _heartFilled == true ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
             tooltip: "Favorite",
             onPressed: () {
               // If the tournament is not favorited, they are making it favorite
-              if (!heartFilled) {
-                print("inner id");
-                print(widget.tournamentInfo.id);
-                widget.addFavorite(widget.tournamentInfo.id);
+              if (!_heartFilled) {
+                widget.addFavorite(widget.tournamentInfo.ezraId);
               }
               // If the tournament is favorited, they are making it unfavorited
               else {
-                print("inner id");
-                print(widget.tournamentInfo.id);
-                widget.removeFavorite(widget.tournamentInfo.id);
+                widget.removeFavorite(widget.tournamentInfo.ezraId);
               }
               setState(() {
-                heartFilled = !heartFilled;
+                _heartFilled = !_heartFilled;
               });
             },
           )
