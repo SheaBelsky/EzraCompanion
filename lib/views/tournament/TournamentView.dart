@@ -98,6 +98,7 @@ class _TournamentViewState extends State<TournamentView> {
   // Build the widget
   @override
   Widget build(BuildContext context) {
+    double padding = _selectedIndex != 1 ? 15.0 : 0.0;
     return Scaffold(
       appBar: AppBar(
         actions: <Widget>[
@@ -122,7 +123,7 @@ class _TournamentViewState extends State<TournamentView> {
         title: Text(widget.tournamentInfo.name),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(15.0),
+        padding: EdgeInsets.all(padding),
         child: _tournamentViewPages.elementAt(_selectedIndex)
       ),
       bottomNavigationBar: BottomNavigationBar(

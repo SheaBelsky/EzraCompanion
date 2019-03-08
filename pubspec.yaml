@@ -20,9 +20,6 @@ dependencies:
   # Format dates to make them more readable
   date_format: ^1.0.6
 
-  # Font Awesome icons
-  font_awesome_flutter: ^8.4.0
-
   # Firebase Cloud Messaging
   firebase_analytics: ^1.0.4
   firebase_core: ^0.3.0+2
@@ -42,6 +39,12 @@ dependencies:
 
   # dart.io
   path_provider: ^0.4.1
+
+  # URL launcher
+  url_launcher: ^3.0.3
+
+  # Webview
+  webview_flutter: ^0.3.3+1
 
 dev_dependencies:
   flutter_test:

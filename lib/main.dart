@@ -14,7 +14,7 @@ import "package:ezra_companion/classes/FileStorage.dart";
 import "package:ezra_companion/classes/TournamentListItem.dart";
 
 // Template imports
-import "package:ezra_companion/views/home/TournamentList.dart";
+import "package:ezra_companion/views/app/TournamentList.dart";
 
 // View imports
 import "package:ezra_companion/views/app/Favorites.dart";

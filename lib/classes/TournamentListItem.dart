@@ -11,6 +11,8 @@ class TournamentListItem {
   final String key;
   final String location;
   final String name;
+  final String venueMapExtension;
+  final String venueMapUrl;
 
   /// Constructor
   TournamentListItem({
@@ -20,8 +22,18 @@ class TournamentListItem {
     this.key,
     this.location,
     this.name,
+    this.venueMapExtension,
+    this.venueMapUrl,
   });
 
+
+  /// Formats the date of the tournament to be a human readable form
+  /// January 1, 2019
+  String get formattedDate {
+    return formatDate(DateTime.parse(date), [MM, " ", d, ", ", yyyy]);
+  }
+
+  /// Return the shorter version of this tournament's name
   String get shortName {
     String shortName = name;
 
@@ -33,46 +45,17 @@ class TournamentListItem {
     return shortName;
   }
 
-  /// Formats the date of the tournament to be a human readable form
-  /// January 1, 2019
-  String get formattedDate {
-    return formatDate(DateTime.parse(date), [MM, " ", d, ", ", yyyy]);
-  }
 
   factory TournamentListItem.fromJson(Map<String, dynamic> inputJson) {
-    String location;
-    try {
-      if (inputJson["location"] is String) {
-        location = inputJson["location"];
-      }
-      else {
-        Map jsonLocation = new Map<dynamic, dynamic>.from(inputJson["location"]);
-        String buildingName = jsonLocation["name"] != null ? jsonLocation["name"] : "";
-        String street1 = jsonLocation["street1"] != null ? jsonLocation["street1"] : "";
-        String city = jsonLocation["suburb"] != null ? jsonLocation["suburb"] : "";
-        String state = jsonLocation["state"] != null ? jsonLocation["state"] : "";
-        String zipcode = jsonLocation["postcode"] != null ? jsonLocation["postcode"] : "";
-        location = "$buildingName $street1, $city $state $zipcode";
-      }
-    }
-    catch (e) {
-      print("Error in parsing tournament location:");
-      print(e);
-      print("----");
-      location = "";
-    }
-
-    String id = inputJson["_id"] is String
-      ? inputJson["_id"] // First time, comes from API
-      : inputJson["ezraId"]; // Second time, comes from the app itself (renamed property)
-
     return TournamentListItem(
       description: inputJson["description"],
       date: inputJson["date"],
-      ezraId: id,
+      ezraId: inputJson["ezraId"],
       key: inputJson["key"],
-      location: location,
-      name: inputJson["name"]
+      location: inputJson["location"],
+      name: inputJson["name"],
+      venueMapExtension: inputJson["venueMapExtension"],
+      venueMapUrl: inputJson["venueMapUrl"],
     );
   }
 
@@ -84,7 +67,9 @@ class TournamentListItem {
       "ezraId": ezraId != null ? ezraId : "",
       "key": key != null ? key : "",
       "location": location != null ? location : "",
-      "name": name != null ? name : ""
+      "name": name != null ? name : "",
+      "venueMapExtension": venueMapExtension != null ? venueMapExtension : "",
+      "venueMapUrl": venueMapUrl != null ? venueMapUrl : "",
     };
     return returnMap;
   }
