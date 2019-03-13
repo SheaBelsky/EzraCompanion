@@ -1,7 +1,5 @@
 // Dart imports
 import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 
 // Firebase Analytics
 import 'package:firebase_analytics/firebase_analytics.dart';

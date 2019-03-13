@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:date_format/date_format.dart';
-import 'package:ezra_companion/classes/TournamentListItem.dart';
 
 // Route imports
 import "package:ezra_companion/views/tournament/TournamentView.dart";
@@ -9,11 +8,15 @@ import "package:ezra_companion/views/tournament/TournamentView.dart";
 class Favorites extends StatelessWidget {
   final Function addFavorite;
   final Function removeFavorite;
+
   final List tournaments;
+
+  final firebaseManager;
 
   const Favorites({
     Key key,
     this.addFavorite,
+    this.firebaseManager,
     this.removeFavorite,
     this.tournaments,
   }) : super(key: key);
@@ -39,6 +42,7 @@ class Favorites extends StatelessWidget {
                   builder: (context) {
                     return TournamentView(
                       addFavorite: addFavorite,
+                      firebaseManager: firebaseManager,
                       isFavorited: true,
                       removeFavorite: removeFavorite,
                       tournamentInfo: tournaments[index]

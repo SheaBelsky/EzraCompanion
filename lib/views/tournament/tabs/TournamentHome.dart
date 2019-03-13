@@ -69,32 +69,32 @@ class TournamentHome extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Widget> listChildren = [
       TournamentHomeTextItem(
-          heading: "Tournament Name",
-          text: [
-            tournamentInfo.name
-          ]
+        heading: "Tournament Name",
+        text: [
+          tournamentInfo.name
+        ]
       ),
       TournamentHomeTextItem(
-          heading: "Tournament Date",
-          text: [
-            tournamentInfo.formattedDate
-          ]
+        heading: "Tournament Date",
+        text: [
+          tournamentInfo.formattedDate
+        ]
       ),
       TournamentHomeTextItem(
-          heading: "Tournament Location",
-          text: [
-            tournamentInfo.location
-          ]
+        heading: "Tournament Location",
+        text: [
+          tournamentInfo.location
+        ]
       ),
     ];
     if (tournamentInfo.description != null) {
       HtmlView description = new HtmlView(
-          data: tournamentInfo.description,
-          scrollable: false
+        data: tournamentInfo.description,
+        scrollable: false
       );
       listChildren.add(TournamentHomeTextItem(
-          heading: "Tournament Description",
-          childWidget: description
+        heading: "Tournament Description",
+        childWidget: description
       ));
     }
     return ListView(

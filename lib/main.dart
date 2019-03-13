@@ -91,8 +91,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
       // If this date has never been set before, it means this is the user's first time
       DateTime lastUpdatedAt = loadedAppState["tournamentsUpdatedAt"] != null
-          ? DateTime.parse(loadedAppState["tournamentsUpdatedAt"])
-          : now;
+        ? DateTime.parse(loadedAppState["tournamentsUpdatedAt"])
+        : now;
 
       // If the last time the tournaments were updated was 7 or more days ago, update them now
       if (lastUpdatedAt.difference(now).inDays >= 7 || lastUpdatedAt == now) {
@@ -139,13 +139,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void _updateLocalState (Map newAppState) {
     setState(() {
       _appState = newAppState;
-    });
-  }
-
-  /// Updates the state of the app locally to minimize I/O operations
-  void updateState(Map file) {
-    setState(() {
-      _appState = file;
     });
   }
 
@@ -222,9 +215,10 @@ class _MyHomePageState extends State<MyHomePage> {
     if (tournaments is List && tournaments.length != 0) {
       List<TournamentListItem> favoriteTournaments = _getFavoriteTournaments();
       return Favorites(
-          addFavorite: _addFavorite,
-          removeFavorite: _removeFavorite,
-          tournaments: favoriteTournaments
+        addFavorite: _addFavorite,
+        firebaseManager: _firebaseManager,
+        removeFavorite: _removeFavorite,
+        tournaments: favoriteTournaments
       );
     }
     else {
@@ -244,10 +238,11 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _tournamentListView (List<TournamentListItem> tournaments)  {
     if (tournaments is List && tournaments.length != 0) {
       return TournamentList(
-          addFavorite: _addFavorite,
-          favoriteTournaments: _getFavoriteTournaments(),
-          removeFavorite: _removeFavorite,
-          tournaments: tournaments
+        addFavorite: _addFavorite,
+        firebaseManager: _firebaseManager,
+        favoriteTournaments: _getFavoriteTournamentIDs(),
+        removeFavorite: _removeFavorite,
+        tournaments: tournaments
       );
     }
     else {
@@ -280,7 +275,7 @@ class _MyHomePageState extends State<MyHomePage> {
             items: [
               BottomNavigationBarItem(icon: Icon(Icons.home), title: Text('Home'), backgroundColor: Colors.red),
               BottomNavigationBarItem(icon: Icon(Icons.favorite), title: Text('Favorites'), backgroundColor: Colors.red),
-              BottomNavigationBarItem(icon: Icon(Icons.settings), title: Text('Settings'), backgroundColor: Colors.red),
+              BottomNavigationBarItem(icon: Icon(Icons.info), title: Text('About'), backgroundColor: Colors.red),
             ],
             currentIndex: _selectedIndex,
             fixedColor: Colors.red,

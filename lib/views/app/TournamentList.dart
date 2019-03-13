@@ -42,14 +42,18 @@ List<TournamentListItem> parseTournaments(String responseBody) {
 class TournamentList extends StatelessWidget {
   final Function addFavorite;
   final Function removeFavorite;
+
+  final firebaseManager;
+
   final List favoriteTournaments;
   final List tournaments;
 
   TournamentList({
     Key key,
     this.addFavorite,
-    this.removeFavorite,
     this.favoriteTournaments,
+    this.firebaseManager,
+    this.removeFavorite,
     this.tournaments
   }) : super(key: key);
 
@@ -73,6 +77,7 @@ class TournamentList extends StatelessWidget {
                   TournamentListItem currentTournament = tournaments[index];
                   return TournamentView(
                     addFavorite: addFavorite,
+                    firebaseManager: firebaseManager,
                     isFavorited: favoriteTournaments.contains(currentTournament.ezraId),
                     removeFavorite: removeFavorite,
                     tournamentInfo: currentTournament
