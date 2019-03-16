@@ -115,6 +115,7 @@ class _TournamentViewState extends State<TournamentView> {
         updateSubscriptionStatus: _updatePublicSubscriptionStatus
       );
       _tournamentResults = new TournamentResults(
+        fileStorage: _fileStorage,
         tournamentInfo: widget.tournamentInfo
       );
       _tournamentSchedule = new TournamentSchedule(
@@ -179,8 +180,19 @@ class _TournamentViewState extends State<TournamentView> {
   // Build the widget
   @override
   Widget build(BuildContext context) {
-    final double padding = _selectedIndex != 1 ? 15.0 : 0.0;
-    final TextTheme textTheme = Theme.of(context).textTheme;
+      // Ignore the maps and results page for padding
+      double padding;
+      switch(_selectedIndex) {
+          case 1:
+              padding = 0.0;
+              break;
+          case 4:
+              padding = 5.0;
+              break;
+          default:
+              padding = 15.0;
+      }
+      final TextTheme textTheme = Theme.of(context).textTheme;
 
     return FutureBuilder(
       future: initializeTournament(),

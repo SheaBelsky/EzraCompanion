@@ -41,11 +41,26 @@ class TournamentMap extends StatelessWidget {
       }
     }
     else {
-      return Column(
-        children: <Widget>[
-          Text('No map!'),
-          Text('View more ${tournamentInfo.name}'),
-        ],
+      TextStyle pageTextStyle = new TextStyle(
+        fontSize: 16.0,
+        fontWeight: FontWeight.w600,
+        color: Colors.black87,
+      );
+      return Padding(
+          padding: new EdgeInsets.all(25.0),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                new Icon(Icons.map),
+                SizedBox(height: 30),
+                new Text(
+                    "No map has been provided for this tournament; ask your organizers to upload one, then you'll see it here!",
+                    style: pageTextStyle,
+                    textAlign: TextAlign.center
+                ),
+              ]
+          )
       );
     }
   }
