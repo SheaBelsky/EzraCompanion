@@ -1,4 +1,7 @@
 # Ezra Companion
+[![Download the Ezra Companion on the App Store](https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg)](https://itunes.apple.com/us/app/ezra-companion/id1453585738?ls=1&mt=8)
+[![Download the Ezra Companion on the Google Play Store](https://upload.wikimedia.org/wikipedia/commons/c/cd/Get_it_on_Google_play.svg)](
+https://play.google.com/store/apps/details?id=com.ezratech.ezracompanion)
 
 The official application for the Ezra Science Olympiad Platform.
 
