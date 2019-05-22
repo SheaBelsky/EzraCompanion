@@ -115,12 +115,11 @@ class _TournamentViewState extends State<TournamentView> {
         updateSubscriptionStatus: _updatePublicSubscriptionStatus
       );
       _tournamentResults = new TournamentResults(
-        fileStorage: _fileStorage,
         tournamentInfo: widget.tournamentInfo
       );
       _tournamentSchedule = new TournamentSchedule(
-        firebaseManager: widget.firebaseManager,
-        tournamentInfo: widget.tournamentInfo
+        fileStorage: _fileStorage,
+        tournamentInfo: widget.tournamentInfo,
       );
       // Set the page list based on the initialized views
       _tournamentViewPages = [
@@ -246,7 +245,7 @@ class _TournamentViewState extends State<TournamentView> {
             bottomNavigationBar: BottomNavigationBar(
                 items: _tournamentViewTabs,
                 currentIndex: _selectedIndex,
-                fixedColor: Colors.red,
+                fixedColor: Colors.white,
                 onTap: _onItemTapped,
             ),
           );

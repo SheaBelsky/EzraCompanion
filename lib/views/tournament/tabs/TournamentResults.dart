@@ -8,15 +8,14 @@ import 'package:http/http.dart' as http;
 // Consume the Ezra results API, allow people to view results on teams and events from here
 
 // Class imports
+import "package:ezra_companion/classes/ErrorPage.dart";
 import "package:ezra_companion/classes/TournamentListItem.dart";
 
 class TournamentResults extends StatefulWidget {
-    final fileStorage;
     final TournamentListItem tournamentInfo;
 
     const TournamentResults({
         Key key,
-        this.fileStorage,
         this.tournamentInfo,
     }) : super(key: key);
 
@@ -219,8 +218,8 @@ class _TournamentResultsState extends State<TournamentResults> {
                 return parsedResults;
             }
             else {
-                print(resultsApiResponse.statusCode);
-                print(resultsApiResponse.toString());
+                String error = json.decode(resultsApiResponse.body)['error'];
+                return Future.error(error);
             }
         });
         return parsedTournamentResults;
@@ -232,7 +231,11 @@ class _TournamentResultsState extends State<TournamentResults> {
             future: tournamentResults,
             builder: (context, snapshot) {
                 if (snapshot.hasError) {
-                    print(snapshot.error);
+                    return ErrorPage(
+                        errorToShow: snapshot.error is String
+                            ? snapshot.error
+                            : "There was an unexpected error, please try again."
+                    );
                 }
                 if (!snapshot.hasData) {
                     return Center(child: CircularProgressIndicator());

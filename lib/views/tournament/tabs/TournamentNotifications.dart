@@ -47,31 +47,34 @@ class _TournamentNotificationsState extends State<TournamentNotifications> {
       : "Subscribe to Staff Push Notifications";
 
     final TextTheme textTheme = Theme.of(context).textTheme;
-    return Column(
-      children: <Widget>[
-        RichText(
-          textAlign: TextAlign.center,
-          text: TextSpan(
-            text: "Tournament Notifications",
-            style: textTheme.headline
-          )
-        ),
-        Text('Press the below button to subscribe or unsubscribe to public push notifications from the organizers of this tournament!'),
-        // if not subscribed, ask person to subscribe
-        // if subscribed, ask person to unsubscribe
-        RaisedButton(
-          child: Text(buttonTextPublic),
-          onPressed: () {
-            // Update with Firebase
-            widget.updateSubscriptionStatus();
-            // Change the text of the subscribe button
-            setState(() {
-              _isSubscribedPublic = !_isSubscribedPublic;
-            });
-          },
-          padding: const EdgeInsets.all(9.0),
+    return Padding(
+        padding: new EdgeInsets.all(25.0),
+        child: Column(
+          children: <Widget>[
+            RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                    text: "Tournament Notifications",
+                    style: textTheme.headline
+                )
+            ),
+            Text('Press the below button to subscribe or unsubscribe to public push notifications from the organizers of this tournament!'),
+            // if not subscribed, ask person to subscribe
+            // if subscribed, ask person to unsubscribe
+            RaisedButton(
+              child: Text(buttonTextPublic),
+              onPressed: () {
+                // Update with Firebase
+                widget.updateSubscriptionStatus();
+                // Change the text of the subscribe button
+                setState(() {
+                  _isSubscribedPublic = !_isSubscribedPublic;
+                });
+              },
+              padding: const EdgeInsets.all(9.0),
+            )
+          ],
         )
-      ],
     );
   }
 }
