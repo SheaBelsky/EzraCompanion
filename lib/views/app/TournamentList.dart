@@ -12,9 +12,8 @@ import "package:ezra_companion/classes/TournamentListItem.dart";
 import "package:ezra_companion/views/tournament/TournamentView.dart";
 
 /// Make a request to Ezra and get a list of tournaments
-/// TODO: Store the results of this locally, check for new tournaments every so often (every week?)
 Future<List<TournamentListItem>> fetchTournaments(http.Client client) async {
-  final response = await client.get('https://www.ezratech.us/api/tournaments/search');
+  final response = await client.get('https://www.ezratech.us/api/tournaments/search?appOptIn');
 
   if (response.statusCode == 200) {
     // Use the compute function to run parseTournaments

@@ -42,8 +42,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// TODO: Also allow users to "star" a single tournament at a time, so opening/closing the app will re-open that tournament.
-
 class MyHomePage extends StatefulWidget {
   final String title;
 
