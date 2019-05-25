@@ -17,6 +17,12 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="Ezra"
         android:icon="@mipmap/ic_launcher">
+
+        <!-- Set custom default icon. This is used when no icon is set for incoming notification messages. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_stat_ic_notification" />
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
